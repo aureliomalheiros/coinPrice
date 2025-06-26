@@ -1,0 +1,33 @@
+name: Release my repository
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '**.tf'
+      - '**.sh'
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Bump version and push tag
+        id: tag_version
+        uses: anothrNick/github-tag-action@1.66.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL }}
+          WITH_V: true
+          DEFAULT_BUMP: patch
+          PRERELEASE: true
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL }}
+        with:
+          tag_name: ${{ steps.tag_version.outputs.new_tag }}
+          release_name: Release ${{ steps.tag_version.outputs.new_tag }}
+          draft: false
+          prerelease: false
