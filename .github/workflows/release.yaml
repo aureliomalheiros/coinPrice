@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - main
+
 jobs:
   release:
     name: Release
@@ -10,14 +11,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 
+
       - name: Bump version and push tag
         id: tag_version
         uses: anothrNick/github-tag-action@1.66.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL }}
-          WITH_V: true
-          DEFAULT_BUMP: patch
-          PRERELEASE: true
+        with:  
+          github_token: ${{ secrets.PERSONAL }} 
+          with_v: true
+          default_bump: patch
+          prerelease: false 
+          initial_version: "0.0.0" 
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
@@ -26,5 +32,6 @@ jobs:
         with:
           tag_name: ${{ steps.tag_version.outputs.new_tag }}
           release_name: Release ${{ steps.tag_version.outputs.new_tag }}
+          body: "Release ${{ steps.tag_version.outputs.new_tag }}"
           draft: false
           prerelease: false
