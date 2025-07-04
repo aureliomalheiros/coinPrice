@@ -15,18 +15,21 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  
+          fetch-depth: 0
 
       - name: Bump version and push tag
         id: tag_version
         uses: anothrNick/github-tag-action@1.73.0
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAG_PREFIX: v
-          PRERELEASE: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          tag_prefix: "v"
+          prerelease: false
+          initial_version: "0.1.0"
+          default_bump: minor
 
       - name: Create Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v1
+        if: steps.tag_version.outputs.new_tag
         with:
           tag_name: ${{ steps.tag_version.outputs.new_tag }}
           name: Release ${{ steps.tag_version.outputs.new_tag }}
