@@ -21,7 +21,7 @@ jobs:
         id: tag_version
         uses: anothrNick/github-tag-action@1.73.0
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.PERSONAL }}
           tag_prefix: "v"
           prerelease: false
           initial_version: "0.1.0"
