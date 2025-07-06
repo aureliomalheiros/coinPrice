@@ -24,17 +24,19 @@ jobs:
 
       - name: Bump version and push tag
         uses: anothrNick/github-tag-action@v1 
+        id: tag_version
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
           TAG_PREFIX: v
           PRERELEASE: true
 
       - name: Create Release
-        uses: softprops/action-gh-release@v1
-        if: steps.tag_version.outputs.new_tag
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ steps.tag_version.outputs.new_tag }}
-          name: Release ${{ steps.tag_version.outputs.new_tag }}
-          body: "Automatic release"
+          release_name: Release ${{ steps.tag_version.outputs.new_tag }}
           draft: false
           prerelease: false
