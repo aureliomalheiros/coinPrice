@@ -1,24 +1,25 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
-	"encoding/json"
 
 	"github.com/aureliomalheiros/coinprice/internal/price"
 	"github.com/spf13/cobra"
 )
 
 var (
-	usdFlag bool
-	brlFlag bool
+	usdFlag  bool
+	brlFlag  bool
 	jsonFlag bool
+	coinFlag string
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "coinprice",
-	Short: "Get current Bitcoin price in BRL",
+	Use:   "coinprice [coin]",
+	Short: "Get current Crypto price in BRL and USD",
 	Run: func(cmd *cobra.Command, args []string) {
 		if !usdFlag && !brlFlag {
 			fmt.Println("Please specify a currency using --usd or --brl flag")
@@ -26,46 +27,42 @@ var rootCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
+		coin := "bitcoin"
+		if coinFlag != "" {
+			coin = coinFlag
+		} 
+
 		result := make(map[string]float64)
 
 		if brlFlag {
-			priceBRL, err := price.GetBitcoinPriceBRL("brl")
+			priceBRL, err := price.GetCryptoPrice(coin, "brl")
 			if err != nil {
-				log.Fatalf("Error fetching BRL price: %v", err)
+				log.Fatalf("Error fetching BRL price for %s: %v", coin, err)
 			}
 			result["brl"] = priceBRL
 		}
 
 		if usdFlag {
-			priceUSD, err := price.GetBitcoinPriceBRL("usd")
+			priceUSD, err := price.GetCryptoPrice(coin, "usd")
 			if err != nil {
-				log.Fatalf("Error fetching USD price: %v", err)
+				log.Fatalf("Error fetching USD price for %s: %v", coin, err)
 			}
-			result["brl"] = priceUSD
-		}
-
-		if brlFlag && usdFlag {
-			priceBRL, err := price.GetBitcoinPriceBRL("brl")
-			if err != nil {
-				log.Fatalf("Error fetching BRL price: %v", err)
-			}
-			priceUSD, err := price.GetBitcoinPriceBRL("usd")
-			if err != nil {
-				log.Fatalf("Error fetching USD price: %v", err)
-			}
-			result["brl"] = priceBRL
 			result["usd"] = priceUSD
 		}
 
 		if jsonFlag {
-			jsonData, _ := json.Marshal(result)
+			jsonData, err := json.Marshal(result)
+			if err != nil {
+				log.Fatalf("Error generating JSON: %v", err)
+			}
 			fmt.Println(string(jsonData))
 		} else {
-			for k, v := range result {
-				if k == "brl" {
-					fmt.Printf("Bitcoin price in %s: R$ %.2f\n", k, v)
-				} else if k == "usd" {
-					fmt.Printf("Bitcoin price in %s: $ %.2f\n", k, v)
+			for currency, value := range result {
+				switch currency {
+				case "brl":
+					fmt.Printf("%s price in BRL: R$ %.2f\n", coin, value)
+				case "usd":
+					fmt.Printf("%s price in USD: $ %.2f\n", coin, value)
 				}
 			}
 		}
@@ -79,7 +76,8 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.Flags().BoolVarP(&usdFlag, "usd", "u", false, "Get Bitcoin price in USD")
-	rootCmd.Flags().BoolVarP(&brlFlag, "brl", "b", false, "Get Bitcoin price in BRL")
-	rootCmd.Flags().BoolP("json", "j", false, "Output in JSON format")
+	rootCmd.Flags().BoolVarP(&usdFlag, "usd", "u", false, "Get price in USD")
+	rootCmd.Flags().BoolVarP(&brlFlag, "brl", "b", false, "Get price in BRL")
+	rootCmd.Flags().BoolVarP(&jsonFlag, "json", "j", false, "Output in JSON format")
+	rootCmd.Flags().StringVarP(&coinFlag, "coin", "c", "", "Specify cryptocurrency  (Read documentation) - default: bitcoin")
 }
