@@ -2,6 +2,8 @@
 
 A lightweight cryptocurrency price checker written in Go that supports multiple coins and currencies using the CoinGecko API.
 
+![coinprice](img/coinprice)
+
 ## 🌟 Features
 
 - Get real-time prices for 30+ cryptocurrencies
