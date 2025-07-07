@@ -21,16 +21,15 @@ var rootCmd = &cobra.Command{
 	Use:   "coinprice [coin]",
 	Short: "Get current Crypto price in BRL and USD",
 	Run: func(cmd *cobra.Command, args []string) {
-		if !usdFlag && !brlFlag {
-			fmt.Println("Please specify a currency using --usd or --brl flag")
-			cmd.Help()
-			os.Exit(1)
+
+		if !brlFlag && !usdFlag {
+			usdFlag = true
 		}
 
 		coin := "bitcoin"
 		if coinFlag != "" {
 			coin = coinFlag
-		} 
+		}
 
 		result := make(map[string]float64)
 
