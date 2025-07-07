@@ -4,6 +4,11 @@ on:
     branches:
       - main
 
+    paths-ignore:
+      - 'README.md'
+      - '.github/workflows/'
+
+
 jobs:
   release:
     name: Generate Release
