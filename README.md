@@ -44,9 +44,10 @@ coinprice --brl --json
 ```bash
 -b, --brl        Get price in Brazilian Real
 -u, --usd        Get price in US Dollar
--c, --coin string Specify cryptocurrency (default "bitcoin")
+-c, --coin       string Specify cryptocurrency (default "bitcoin")
 -j, --json       Output in JSON format
 -h, --help       Show help
+-l, --list       List available cryptocurrencies (all or specific coin name)
 ```
 
 ## Supported Cryptocurrencies 🪙
