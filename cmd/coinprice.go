@@ -7,14 +7,16 @@ import (
 	"os"
 
 	"github.com/aureliomalheiros/coinprice/internal/price"
+	"github.com/aureliomalheiros/coinprice/internal/list"
 	"github.com/spf13/cobra"
 )
 
 var (
-	usdFlag  bool
-	brlFlag  bool
-	jsonFlag bool
-	coinFlag string
+	usdFlag  	bool
+	brlFlag  	bool
+	jsonFlag 	bool
+	listFlag 	bool
+	coinFlag	string
 )
 
 var rootCmd = &cobra.Command{
@@ -22,6 +24,11 @@ var rootCmd = &cobra.Command{
 	Short: "Get current Crypto price in BRL and USD",
 	Run: func(cmd *cobra.Command, args []string) {
 
+		if listFlag {
+			list.PrintCoinList()
+			return
+		}
+		
 		if !brlFlag && !usdFlag {
 			usdFlag = true
 		}
@@ -78,5 +85,6 @@ func init() {
 	rootCmd.Flags().BoolVarP(&usdFlag, "usd", "u", false, "Get price in USD")
 	rootCmd.Flags().BoolVarP(&brlFlag, "brl", "b", false, "Get price in BRL")
 	rootCmd.Flags().BoolVarP(&jsonFlag, "json", "j", false, "Output in JSON format")
+	rootCmd.Flags().BoolVarP(&listFlag, "list", "l", false, "List available cryptocurrencies (all or specific coin name)")
 	rootCmd.Flags().StringVarP(&coinFlag, "coin", "c", "", "Specify cryptocurrency  (Read documentation) - default: bitcoin")
 }
